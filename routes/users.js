@@ -13,6 +13,7 @@ router.get('/login', forwardAuthenticated, (req, res) => res.render('login'));
 router.get('/register', forwardAuthenticated, (req, res) => res.render('register'));
 
 // Register
+//To verify the 'register' page.
 router.post('/register', (req, res) => {
   const { name, email, password, password2 } = req.body;
   let errors = [];

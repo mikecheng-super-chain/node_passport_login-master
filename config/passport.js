@@ -1,3 +1,6 @@
+//To check the user 'email' and 'password' matches what they register or not.
+//To verify the 'login' page.
+
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 

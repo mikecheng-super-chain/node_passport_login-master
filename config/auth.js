@@ -1,3 +1,6 @@
+//To check whether the user is login before entering the dashboard page.
+//If the user haven't login, redirect him back to login page.
+
 module.exports = {
   ensureAuthenticated: function(req, res, next) {
     if (req.isAuthenticated()) {
