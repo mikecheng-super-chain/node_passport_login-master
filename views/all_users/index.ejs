@@ -3,8 +3,8 @@
 <% include ../partials/messages %>
 <form action = "/all_users" method = "GET">
     <label>User Name</label>
-    <input type="text" name="name">
-    <button type="submit" name="name">Search</button>
+    <input type="text" name="name" value="<%= searchOptions.name %>">
+    <button type="submit">Search</button>
 </form>
 <br>
 <% newUsers.forEach(newUser => { %>

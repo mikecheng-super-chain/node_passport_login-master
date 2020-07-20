@@ -8,14 +8,18 @@ const { forwardAuthenticated } = require('../config/auth');
 
 // All Authors Route
 router.get('/', async (req, res) => {
+  let searchOptions = {}
+  if(req.query.name != null && req.query.name !== '') {
+    searchOptions.name = new RegExp(req.query.name, 'i')
+  }
     //res.render('all_users/index')
     try {
-      const newUser = await User.find({})
+      const newUser = await User.find(searchOptions)
       res.render('all_users/index', {
         newUsers: newUser,
+        searchOptions: req.query
       })
-    }
-    catch {
+    } catch {
       res.redirect('/')
     }
 })
