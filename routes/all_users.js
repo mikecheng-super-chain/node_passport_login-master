@@ -8,7 +8,16 @@ const { forwardAuthenticated } = require('../config/auth');
 
 // All Authors Route
 router.get('/', async (req, res) => {
-    res.render('all_users/index')
+    //res.render('all_users/index')
+    try {
+      const newUser = await User.find({})
+      res.render('all_users/index', {
+        newUsers: newUser,
+      })
+    }
+    catch {
+      res.redirect('/')
+    }
 })
 
 // New Author Route
@@ -23,7 +32,9 @@ router.get('/', async (req, res) => {
 
 // Register Page
 //router.get('/new', (req, res) => res.render('new'));
-router.get('/new', forwardAuthenticated, (req, res) => res.render('all_users/new'));
+router.get('/new', forwardAuthenticated, (req, res) => {
+  res.render('all_users/new')//, { newUsers: new User() })
+})
 
 // Register
 //To verify the 'register' page.
@@ -44,7 +55,7 @@ router.post('/', (req, res) => {
   }
 
   if (errors.length > 0) {
-    res.render('new', {
+    res.render('all_users/new', {
       errors,
       name,
       email,
@@ -55,7 +66,7 @@ router.post('/', (req, res) => {
     User.findOne({ email: email }).then(user => {
       if (user) {
         errors.push({ msg: 'Email already exists' });
-        res.render('new', {
+        res.render('all_users/new', {
           errors,
           name,
           email,
@@ -75,12 +86,26 @@ router.post('/', (req, res) => {
             newUser.password = hash;
             newUser
               .save()
-              .then(user => {
+              .then(async user => {
                 req.flash(
                   'success_msg',
                   'You are now registered and can log in'
                 );
-                res.redirect('/all_users');
+                //res.redirect('/all_users');
+
+                try {
+                  const newUsers = await newUser.save()
+                  //res.redirect(`all_users/${newUsers.id}`)
+                  res.redirect('/all_users')
+                } catch {
+                  res.render('all_users/new', {
+                    newUser: name,
+                    newUser: email,
+                    newUser: password,
+                    errorMessage: 'Error creating User'
+                  })
+                }
+
               })
               .catch(err => console.log(err));
           });

@@ -1,3 +1,12 @@
 <h4><a href="/all_users/new">Create a new user</a></h4>
 <h2>All Users</h2>
 <% include ../partials/messages %>
+<form action = "/all_users" method = "GET">
+    <label>User Name</label>
+    <input type="text" name="name">
+    <button type="submit" name="name">Search</button>
+</form>
+<br>
+<% newUsers.forEach(newUser => { %>
+    <div><%= newUser.name %></div>
+<% }) %>
