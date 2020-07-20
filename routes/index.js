@@ -15,4 +15,7 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
   })
 );
 
+//Just for testing, can be delete with the 'all.ejs' file.
+router.get('/all', (req, res) => res.render('all'))
+
 module.exports = router;
