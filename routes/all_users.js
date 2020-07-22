@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     //res.render('all_users/index')
     try {
       const newUser = await User.find(searchOptions)
-      res.render('all_users/index', {
+      res.render('all_users/index.ejs', {
         newUsers: newUser,
         searchOptions: req.query
       })
@@ -36,8 +36,8 @@ router.get('/', async (req, res) => {
 
 // Register Page
 //router.get('/new', (req, res) => res.render('new'));
-router.get('/new', forwardAuthenticated, (req, res) => {
-  res.render('all_users/new')//, { newUsers: new User() })
+router.get('/new', (req, res) => {
+  res.render('all_users/new.ejs')//, { newUsers: new User() })
 })
 
 // Register
@@ -59,7 +59,7 @@ router.post('/', (req, res) => {
   }
 
   if (errors.length > 0) {
-    res.render('all_users/new', {
+    res.render('all_users/new.ejs', {
       errors,
       name,
       email,
@@ -70,7 +70,7 @@ router.post('/', (req, res) => {
     User.findOne({ email: email }).then(user => {
       if (user) {
         errors.push({ msg: 'Email already exists' });
-        res.render('all_users/new', {
+        res.render('all_users/new.ejs', {
           errors,
           name,
           email,
@@ -99,10 +99,10 @@ router.post('/', (req, res) => {
 
                 try {
                   const newUsers = await newUser.save()
-                  //res.redirect(`all_users/${newUsers.id}`)
-                  res.redirect('/all_users')
+                  res.redirect(`all_users/${newUsers.id}`)
+                  //res.redirect('/all_users')
                 } catch {
-                  res.render('all_users/new', {
+                  res.render('all_users/new.ejs', {
                     newUser: name,
                     newUser: email,
                     newUser: password,
@@ -118,5 +118,53 @@ router.post('/', (req, res) => {
     });
   }
 });
+
+router.get('/:id', async (req, res) => {
+  //res.send('Show User ' + req.params.id)
+  res.redirect('/all_users')
+})
+
+router.get('/:id/edit', async (req, res) => {
+  try {
+    const newUser = await User.findById(req.params.id)
+    res.render('all_users/edit.ejs', { newUser: newUser })
+  } catch {
+    res.redirect('/all_users')
+  }
+})
+
+router.put('/:id', async (req, res) => {
+  let newUser
+  try {
+    newUser = await User.findById(req.params.id)
+    newUser.name = req.body.name
+    await newUser.save()
+    res.redirect(`/all_users/${newUser.id}`)
+  } catch {
+    if (newUser == null) {
+      res.redirect('/')
+    } else {
+      res.render('all_users/edit.ejs', {
+        newUser: name,
+        errorMessage: 'Error updating User'
+      })
+    }
+  }
+})
+
+router.delete('/:id', async (req, res) => {
+  let newUser
+  try {
+    newUser = await User.findById(req.params.id)
+    await newUser.remove()
+    res.redirect('/all_users')
+  } catch {
+    if (newUser == null) {
+      res.redirect('/')
+    } else {
+      res.redirect(`/all_users/${newUser.id}`)
+    }
+  }
+})
 
 module.exports = router

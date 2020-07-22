@@ -9,4 +9,8 @@
 <br>
 <% newUsers.forEach(newUser => { %>
     <div><%= newUser.name %></div>
-<% }) %>
+    <a href="/all_users/<%= newUser.id %>">View</a>
+    <a href="/all_users/<%= newUser.id %>/edit">Edit</a>
+    <%- include('../partials/deleteForm.ejs',
+                  { url: `/all_users/${newUser.id}` }) %>
+<% }) %></br>

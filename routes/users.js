@@ -7,10 +7,10 @@ const User = require('../models/User');
 const { forwardAuthenticated } = require('../config/auth');
 
 // Login Page
-router.get('/login', forwardAuthenticated, (req, res) => res.render('login'));
+router.get('/login', forwardAuthenticated, (req, res) => res.render('login.ejs'));
 
 // Register Page
-router.get('/register', forwardAuthenticated, (req, res) => res.render('register'));
+router.get('/register', forwardAuthenticated, (req, res) => res.render('register.ejs'));
 
 // Register
 //To verify the 'register' page.
@@ -31,7 +31,7 @@ router.post('/register', (req, res) => {
   }
 
   if (errors.length > 0) {
-    res.render('register', {
+    res.render('register.ejs', {
       errors,
       name,
       email,
@@ -42,7 +42,7 @@ router.post('/register', (req, res) => {
     User.findOne({ email: email }).then(user => {
       if (user) {
         errors.push({ msg: 'Email already exists' });
-        res.render('register', {
+        res.render('register.ejs', {
           errors,
           name,
           email,

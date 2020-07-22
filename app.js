@@ -12,6 +12,10 @@
 //Update Heroku:
 //git push heroku master
 
+//Push an existing repository
+//git remote add origin ()...
+//git push -u origin master
+
 //Website:
 //http://localhost:3000
 
@@ -22,7 +26,10 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
 const bodyParser = require('body-parser')
+const methOverride = require('method-override')
 const app = express();
+const exphbs = require('express-handlebars');
+var engines = require('consolidate')
 
 // Passport Config
 require('./config/passport')(passport);
@@ -40,12 +47,21 @@ mongoose
   .catch(err => console.log(err));
 
 // EJS
-app.use(expressLayouts);
-app.set('view engine', 'ejs');
+app.engine('.ejs', engines.ejs)
+// app.use(expressLayouts);
+app.set('view engine', '.ejs');
+
+//Method Override
+app.use(methOverride('_method'))
+
+//handlebars template engine
+app.engine('.hbs', engines.handlebars)
+app.set('view engine', '.hbs');
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: false }))
+app.use(express.json())
 
 // Express session
 app.use(
@@ -75,6 +91,14 @@ app.use(function(req, res, next) {
 app.use('/', require('./routes/index.js'));
 app.use('/users', require('./routes/users.js'));
 app.use('/all_users', require('./routes/all_users.js'));
+
+// Routes for products
+const productsRoute = require('./routes/products')
+const searchRoute = require('./routes/search');
+const exportRoute = require('./routes/search');
+app.use('/products', productsRoute)
+app.use('/search', searchRoute)
+app.use('/export', exportRoute)
 
 const PORT = process.env.PORT || 3000;
 
