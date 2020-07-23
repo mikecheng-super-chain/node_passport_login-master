@@ -138,6 +138,8 @@ router.put('/:id', async (req, res) => {
   try {
     newUser = await User.findById(req.params.id)
     newUser.name = req.body.name
+    newUser.email = req.body.email
+    newUser.password = req.body.password
     await newUser.save()
     res.redirect(`/all_users/${newUser.id}`)
   } catch {

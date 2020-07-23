@@ -4,6 +4,7 @@ const Product = require('../models/Product')
 const multer = require('multer')
 var upload = multer()
 const fs = require('fs')
+const session = require('express-session');
 const {
     ensureAuthenticated,
     forwardAuthenticated

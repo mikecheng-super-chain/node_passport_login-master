@@ -50,6 +50,7 @@
             value="<%= typeof password2 != 'undefined' ? password2 : '' %>"
           />
         </div>
+        <div><input type="checkbox" onclick="myFunction()">Show Password</div>
         <button type="submit" class="btn btn-primary btn-block">
           Register
         </button>
@@ -58,3 +59,20 @@
     </div>
   </div>
 </div>
+
+<script>
+  function myFunction() {
+    var x = document.getElementById("password");
+    if (x.type === "password") {
+      x.type = "text";
+    } else {
+      x.type = "password";
+    }
+    var y = document.getElementById("password2");
+    if (y.type === "password") {
+      y.type = "text";
+    } else {
+      y.type = "password";
+    }
+  }
+  </script>

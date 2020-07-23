@@ -12,10 +12,6 @@
 //Update Heroku:
 //git push heroku master
 
-//Push an existing repository
-//git remote add origin ()...
-//git push -u origin master
-
 //Website:
 //http://localhost:3000
 
@@ -28,7 +24,6 @@ const session = require('express-session');
 const bodyParser = require('body-parser')
 const methOverride = require('method-override')
 const app = express();
-const exphbs = require('express-handlebars');
 var engines = require('consolidate')
 
 // Passport Config
@@ -93,9 +88,9 @@ app.use('/users', require('./routes/users.js'));
 app.use('/all_users', require('./routes/all_users.js'));
 
 // Routes for products
-const productsRoute = require('./routes/products')
-const searchRoute = require('./routes/search');
-const exportRoute = require('./routes/search');
+const productsRoute = require('./routes/products.js')
+const searchRoute = require('./routes/search.js');
+const exportRoute = require('./routes/export.js');
 app.use('/products', productsRoute)
 app.use('/search', searchRoute)
 app.use('/export', exportRoute)

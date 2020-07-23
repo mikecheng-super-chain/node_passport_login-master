@@ -4,18 +4,19 @@ const Product = require('../models/Product')
 const multer = require('multer')
 var upload = multer()
 const fs = require('fs')
+const session = require('express-session');
 const {
     ensureAuthenticated,
     forwardAuthenticated
 } = require('../config/auth');
 
-
-router.get('/', ensureAuthenticated , async (req, res) => {
+router.get('/' , async (req, res) => {
     try {
         const products = await Product.find().lean()
                                             .limit(5)
         const productNum = await Product.countDocuments()
-        
+       
+
         res.render('main.hbs', {
             listOfProducts: products,
             productNum: productNum,
@@ -31,22 +32,25 @@ router.get('/', ensureAuthenticated , async (req, res) => {
 
 router.post('/', upload.none(), async (req, res) => {
     try {
+
         const productIds = req.body.id
-        const arr = []
+        const productArr = []
         for(pid of productIds){
-            var jsonFile = await Product.findById(pid)
+            var pt = await Product.findById(pid)
             // console.log(jsonFile.description)
-            arr.push(jsonFile)
+            productArr.push(pt)
         }
-        var outputJson =  JSON.stringify(arr)
-        // var outputObj = JSON.parse(outputJson)
-        const file = './download/output.json'
-        fs.writeFileSync(file, outputJson, (err) => {
-            if (err) throw err
-            console.log('saved file')
-        })
-        res.set('Location', '../dashboard')
-        res.download(file)  
+       
+        req.session.result = productArr
+        res.redirect('../export')
+
+        // const file = './download/output.json'
+        // fs.writeFileSync(file, outputJson, (err) => {
+        //     if (err) throw err
+        //     console.log('saved file')
+        // })
+        // res.set('Location', '../dashboard')
+        // res.download(file)  
         // res.json(outputJson)
     } catch (error) {   
         res.json({ message: error })
