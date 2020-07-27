@@ -10,12 +10,12 @@ const {
     forwardAuthenticated
 } = require('../config/auth');
 
-router.get('/' , async (req, res) => {
+//show all products
+router.get('/', ensureAuthenticated, async (req, res) => {
     try {
         const products = await Product.find().lean()
-                                            .limit(5)
+                                            // .limit(5)
         const productNum = await Product.countDocuments()
-       
 
         res.render('main.hbs', {
             listOfProducts: products,
@@ -30,33 +30,19 @@ router.get('/' , async (req, res) => {
     }
 })
 
+//put all selected product to export cart
 router.post('/', upload.none(), async (req, res) => {
     try {
-
         const productIds = req.body.id
-        const productArr = []
-        for(pid of productIds){
-            var pt = await Product.findById(pid)
-            // console.log(jsonFile.description)
-            productArr.push(pt)
-        }
-       
-        req.session.result = productArr
-        res.redirect('../export')
-
-        // const file = './download/output.json'
-        // fs.writeFileSync(file, outputJson, (err) => {
-        //     if (err) throw err
-        //     console.log('saved file')
-        // })
-        // res.set('Location', '../dashboard')
-        // res.download(file)  
-        // res.json(outputJson)
+        req.session.chosen = productIds
+        res.redirect('/export')
     } catch (error) {   
         res.json({ message: error })
     }
 })
 
+
+//for debug use
 router.get('/:productId', ensureAuthenticated, async (req, res) => {
     try {
         // const product = await Product.find({_id :req.params.productId})
@@ -76,7 +62,7 @@ router.get('/:productId', ensureAuthenticated, async (req, res) => {
     }
    
 })
-
+//for debug
 router.post('/:productId', upload.none(), async (req, res) => {
 
     try {

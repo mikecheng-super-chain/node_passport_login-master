@@ -3,19 +3,19 @@ const router = express.Router()
 const Product = require('../models/Product')
 const multer = require('multer')
 var upload = multer()
-const fs = require('fs')
-const session = require('express-session');
 const {
     ensureAuthenticated,
     forwardAuthenticated
 } = require('../config/auth');
 
+
+//for search page
 router.get('/', ensureAuthenticated, async (req, res) => {
     try {
         const q = req.query.q
 
         if(q === ''){
-            res.redirect('../products')
+            res.redirect('/products')
             return
         }
 
@@ -44,23 +44,8 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 router.post('/', upload.none(), async (req, res) => {
     try {
         const productIds = req.body.id
-        const arr = []
-        for (pid of productIds) {
-            var jsonFile = await Product.findById(pid)
-            // console.log(jsonFile.description)
-            arr.push(jsonFile)
-        }
-        var outputJson = JSON.stringify(arr)
-        // var outputObj = JSON.parse(outputJson)
-        const file = './download/output.json'
-        fs.writeFileSync(file, outputJson, (err) => {
-            if (err) throw err
-            console.log('saved file')
-        })
-        
-        res.download(file)
-        // .redirect('/products')
-        // res.json(outputJson)
+        req.session.chosen = productIds
+        res.redirect('/export')
     } catch (error) {
         res.json({
             message: error
@@ -68,6 +53,7 @@ router.post('/', upload.none(), async (req, res) => {
     }
 })
 
+//for filtering by categort
 router.get('/category/:ctgname', ensureAuthenticated, async (req, res) => {
 
     try {
@@ -91,8 +77,20 @@ router.get('/category/:ctgname', ensureAuthenticated, async (req, res) => {
     }
 })
 
+//post all selected product from category page to export cart, redirect to export page 
+router.post('/category/:ctgname', upload.none(), async (req, res) => {
+    try {
+        const productIds = req.body.id
+        req.session.chosen = productIds
+        res.redirect('/export')
+    } catch (error) {
+        res.json({
+            message: error
+        })
+    }
+})
 
-
+//for filtering shipping option
 router.get('/ship', ensureAuthenticated, async (req, res) => {
     try {
         var from = req.query.shipFrom
@@ -137,6 +135,18 @@ router.get('/ship', ensureAuthenticated, async (req, res) => {
     }
 })
 
+//post all selected product from ship page to export cart, redirect to export page 
+router.post('/ship/', upload.none(), async (req, res) => {
+    try {
+        const productIds = req.body.id
+        req.session.chosen = productIds
+        res.redirect('/export')
+    } catch (error) {
+        res.json({
+            message: error
+        })
+    }
+})
 
 
 module.exports = router
