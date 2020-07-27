@@ -133,13 +133,30 @@ router.get('/:id/edit', async (req, res) => {
   }
 })
 
+router.get('/:id/view', async (req, res) => {
+  try {
+    const newUser = await User.findById(req.params.id)
+    res.render('all_users/view.ejs', { newUser: newUser })
+  } catch {
+    res.redirect('/all_users')
+  }
+})
+
 router.put('/:id', async (req, res) => {
   let newUser
+  //const { name, email, password, password2 } = req.body;
+  let errors = [];
   try {
     newUser = await User.findById(req.params.id)
     newUser.name = req.body.name
     newUser.email = req.body.email
     newUser.password = req.body.password
+    newUser.password2 = req.body.password2
+
+    // vvv ERRORS vvv
+
+    // ^^^ ERRORS ^^^
+
     await newUser.save()
     res.redirect(`/all_users/${newUser.id}`)
   } catch {
@@ -147,7 +164,7 @@ router.put('/:id', async (req, res) => {
       res.redirect('/')
     } else {
       res.render('all_users/edit.ejs', {
-        newUser: name,
+        newUser: newUser,
         errorMessage: 'Error updating User'
       })
     }

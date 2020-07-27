@@ -13,7 +13,8 @@
     <div><%= newUser.email %></div>
     <%# vvv Can be deleted, just for testing. vvv %>
     <div><%= newUser.password %></div>
-    <a href="/all_users/<%= newUser.id %>/edit">View & Edit</a>
+    <a href="/all_users/<%= newUser.id %>/view">View</a>
+    <a href="/all_users/<%= newUser.id %>/edit">Edit</a>
     <%- include('../partials/deleteForm.ejs',
                   { url: `/all_users/${newUser.id}` }) %>
 <% }) %></br>
