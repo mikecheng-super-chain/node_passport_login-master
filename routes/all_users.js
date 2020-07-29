@@ -95,21 +95,7 @@ router.post('/', (req, res) => {
                   'success_msg',
                   'You are now registered and can log in'
                 );
-                //res.redirect('/all_users');
-
-                try {
-                  const newUsers = await newUser.save()
-                  res.redirect(`all_users/${newUsers.id}`)
-                  //res.redirect('/all_users')
-                } catch {
-                  res.render('all_users/new.ejs', {
-                    newUser: name,
-                    newUser: email,
-                    newUser: password,
-                    errorMessage: 'Error creating User'
-                  })
-                }
-
+                res.redirect('/all_users');
               })
               .catch(err => console.log(err));
           });
@@ -145,17 +131,90 @@ router.get('/:id/view', async (req, res) => {
 router.put('/:id', async (req, res) => {
   let newUser
   //const { name, email, password, password2 } = req.body;
+   
+  //vvv ERRORS vvv
   let errors = [];
-  try {
+
+  if (!req.body.name || !req.body.email || !req.body.password || !req.body.password2) {
+    errors.push({ msg: 'Please enter all fields' });
+  }
+
+  if (req.body.password != req.body.password2) {
+    errors.push({ msg: 'Passwords do not match' });
+  }
+
+  if (req.body.password.length < 6) {
+    errors.push({ msg: 'Password must be at least 6 characters' });
+    //res.redirect('/')
+  }
     newUser = await User.findById(req.params.id)
     newUser.name = req.body.name
     newUser.email = req.body.email
     newUser.password = req.body.password
     newUser.password2 = req.body.password2
 
-    // vvv ERRORS vvv
+  if (errors.length > 0) {
+    res.render('all_users/edit.ejs', { 
+      errors,
+      newUser
+    });
+  } 
 
-    // ^^^ ERRORS ^^^
+  else {
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(newUser.password, salt, (err, hash) => {
+        if (err) throw err;
+        newUser.password = hash;
+        newUser
+          .save()
+          .then(async user => {
+            req.flash(
+              'success_msg',
+              'You are now registered and can log in'
+            );
+            res.redirect('/all_users');
+          })
+          .catch(err => console.log(err));
+      });
+    });
+  }
+  /*
+  else {
+    User.findOne({ email: req.body.email }).then(user => {
+      if (user) {
+        errors.push({ msg: 'Email already exists' });
+        res.render('all_users/edit.ejs', {
+          errors,
+          newUser
+        })
+      } else {
+          bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(req.body.password, salt, (err, hash) => {
+              if (err) throw err;
+              req.body.password = hash;
+              
+            })
+            .catch(err => console.log(err));
+          })
+      }
+    })
+  }
+  */
+
+  await newUser.save()
+  res.redirect(`/all_users/${newUser.id}`)
+
+
+  // ^^^ ERRORS ^^^
+  
+
+  /*
+  try {
+    newUser = await User.findById(req.params.id)
+    newUser.name = req.body.name
+    newUser.email = req.body.email
+    newUser.password = req.body.password
+    newUser.password2 = req.body.password2
 
     await newUser.save()
     res.redirect(`/all_users/${newUser.id}`)
@@ -169,6 +228,8 @@ router.put('/:id', async (req, res) => {
       })
     }
   }
+*/
+
 })
 
 router.delete('/:id', async (req, res) => {
