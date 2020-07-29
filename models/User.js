@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+// const UserProduct = require('../models/UserProduct');
+const { mapReduce } = require('../models/UserProduct');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -16,6 +18,9 @@ const UserSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  listOfProducts:{
+    type: [Map],
   }
 });
 
