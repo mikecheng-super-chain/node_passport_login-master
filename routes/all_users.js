@@ -4,10 +4,23 @@ const router = express.Router()
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const { forwardAuthenticated } = require('../config/auth');
+const { ensureAdminAuthenticated, forwardAdminAuthenticated } = require('../config/adminauth');
+const adminpassport = require('passport');
+const app = express();
+
+//vvv ERROR vvv
+//Can't apply both 'passport.js' and 'adminpassport.js' at the time.
+//From the 'passport.js' file, it should redirect to the 'auth.js' to check the user's authentication, but it redirected to the 'adminauth.js' file instead.
+
+require('../config/adminpassport.js')(adminpassport);
+app.use(adminpassport.initialize());
+app.use(adminpassport.session());
+
+//^^^ ERROR ^^^
 
 
-// All Users Route
-router.get('/', async (req, res) => {
+// All Authors Route
+router.get('/', forwardAdminAuthenticated, async (req, res) => {
   let searchOptions = {}
   if(req.query.name != null && req.query.name !== '') {
     searchOptions.name = new RegExp(req.query.name, 'i')
@@ -158,25 +171,25 @@ router.put('/:id', async (req, res) => {
       errors,
       newUser
     });
+    return;
   } 
 
   else {
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(newUser.password, salt, (err, hash) => {
-        if (err) throw err;
-        newUser.password = hash;
-        newUser
-          .save()
-          .then(async user => {
-            req.flash(
-              'success_msg',
-              'You are now registered and can log in'
-            );
-            res.redirect('/all_users');
-          })
-          .catch(err => console.log(err));
-      });
-    });
+    try{
+      let salt = await bcrypt.genSalt(10);
+      let hash = await bcrypt.hash(newUser.password, salt);
+      newUser.password = hash;
+      newUser.save();
+
+      req.flash(
+        'success_msg',
+        'You are now registered and can log in'
+      );
+      res.redirect('/all_users');
+      return;
+    }catch(err){
+      console.log(err);
+    }
   }
   /*
   else {

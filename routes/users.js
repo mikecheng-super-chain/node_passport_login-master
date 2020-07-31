@@ -2,17 +2,23 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const adminpassport = require('passport');
 const multer = require('multer')
 var upload = multer()
 const fs = require('fs')
 const mongoose = require('mongoose')
 // Load User model
+const User = require('../models/User');
 const AdminUser = require('../models/AdminUser');
 const Product = require('../models/Product')
 const {
   ensureAuthenticated,
   forwardAuthenticated
 } = require('../config/auth');
+const {
+  ensureAdminAuthenticated,
+  forwardAdminAuthenticated
+} = require('../config/adminauth');
 const {
   json
 } = require('body-parser');
@@ -62,7 +68,7 @@ router.post('/register', (req, res) => {
       password2
     });
   } else {
-    AdminUser.findOne({
+    User.findOne({
       email: email
     }).then(user => {
       if (user) {
@@ -77,17 +83,17 @@ router.post('/register', (req, res) => {
           password2
         });
       } else {
-        const newAdminUser = new AdminUser({
+        const newUser = new User({
           name,
           email,
           password
         });
 
         bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newAdminUser.password, salt, (err, hash) => {
+          bcrypt.hash(newUser.password, salt, (err, hash) => {
             if (err) throw err;
-            newAdminUser.password = hash;
-            newAdminUser
+            newUser.password = hash;
+            newUser
               .save()
               .then(user => {
                 req.flash(
@@ -120,6 +126,107 @@ router.get('/logout', (req, res) => {
   res.redirect('/users/login');
 });
 
+// Login Page
+router.get('/adminlogin', forwardAdminAuthenticated, (req, res) => res.render('adminlogin.ejs'));
+
+// Register Page
+router.get('/adminregister', forwardAdminAuthenticated, (req, res) => res.render('adminregister.ejs'));
+
+// Register
+//To verify the 'register' page.
+router.post('/adminregister', (req, res) => {
+  const {
+    name,
+    email,
+    password,
+    password2
+  } = req.body;
+  let errors = [];
+
+  if (!name || !email || !password || !password2) {
+    errors.push({
+      msg: 'Please enter all fields'
+    });
+  }
+
+  if (password != password2) {
+    errors.push({
+      msg: 'Passwords do not match'
+    });
+  }
+
+  if (password.length < 6) {
+    errors.push({
+      msg: 'Password must be at least 6 characters'
+    });
+  }
+
+  if (errors.length > 0) {
+    res.render('adminregister.ejs', {
+      errors,
+      name,
+      email,
+      password,
+      password2
+    });
+  } else {
+    AdminUser.findOne({
+      email: email
+    }).then(user => {
+      if (user) {
+        errors.push({
+          msg: 'Email already exists'
+        });
+        res.render('adminregister.ejs', {
+          errors,
+          name,
+          email,
+          password,
+          password2
+        });
+      } else {
+        const newAdminUser = new AdminUser({
+          name,
+          email,
+          password
+        });
+
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(newAdminUser.password, salt, (err, hash) => {
+            if (err) throw err;
+            newAdminUser.password = hash;
+            newAdminUser
+              .save()
+              .then(user => {
+                req.flash(
+                  'success_msg',
+                  'You are now registered and can log in'
+                );
+                res.redirect('/users/adminlogin');
+              })
+              .catch(err => console.log(err));
+          });
+        });
+      }
+    });
+  }
+});
+
+// Login
+router.post('/adminlogin', (req, res, next) => {
+  adminpassport.authenticate('local', {
+    successRedirect: '/all_users',
+    failureRedirect: '/users/adminlogin',
+    failureFlash: true
+  })(req, res, next);
+});
+
+// Logout
+router.get('/adminlogout', (req, res) => {
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/users/adminlogin');
+});
 
 //show user profile product list
 router.get('/profile', ensureAuthenticated, async (req, res) => {

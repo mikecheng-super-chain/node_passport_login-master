@@ -19,14 +19,14 @@ const {
 
 
 // Login Page
-router.get('/login', forwardAuthenticated, (req, res) => res.render('login.ejs'));
+router.get('/adminlogin', forwardAuthenticated, (req, res) => res.render('adminlogin.ejs'));
 
 // Register Page
-router.get('/register', forwardAuthenticated, (req, res) => res.render('register.ejs'));
+router.get('/adminregister', forwardAuthenticated, (req, res) => res.render('adminregister.ejs'));
 
 // Register
 //To verify the 'register' page.
-router.post('/register', (req, res) => {
+router.post('/adminregister', (req, res) => {
   const {
     name,
     email,
@@ -54,7 +54,7 @@ router.post('/register', (req, res) => {
   }
 
   if (errors.length > 0) {
-    res.render('register.ejs', {
+    res.render('adminregister.ejs', {
       errors,
       name,
       email,
@@ -69,7 +69,7 @@ router.post('/register', (req, res) => {
         errors.push({
           msg: 'Email already exists'
         });
-        res.render('register.ejs', {
+        res.render('adminregister.ejs', {
           errors,
           name,
           email,
@@ -94,7 +94,7 @@ router.post('/register', (req, res) => {
                   'success_msg',
                   'You are now registered and can log in'
                 );
-                res.redirect('/users/login');
+                res.redirect('/users/adminlogin');
               })
               .catch(err => console.log(err));
           });
@@ -105,10 +105,10 @@ router.post('/register', (req, res) => {
 });
 
 // Login
-router.post('/login', (req, res, next) => {
+router.post('/adminlogin', (req, res, next) => {
   passport.authenticate('local', {
     successRedirect: '/dashboard',
-    failureRedirect: '/users/login',
+    failureRedirect: '/users/adminlogin',
     failureFlash: true
   })(req, res, next);
 });
@@ -117,7 +117,7 @@ router.post('/login', (req, res, next) => {
 router.get('/logout', (req, res) => {
   req.logout();
   req.flash('success_msg', 'You are logged out');
-  res.redirect('/users/login');
+  res.redirect('/users/adminlogin');
 });
 
 

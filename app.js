@@ -19,6 +19,7 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const passport = require('passport');
+//const adminpassport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
 const bodyParser = require('body-parser')
@@ -27,7 +28,8 @@ const app = express();
 var engines = require('consolidate')
 
 // Passport Config
-require('./config/passport')(passport);
+require('./config/passport.js')(passport);
+//require('./config/adminpassport.js')(adminpassport);
 
 // DB Config
 const db = require('./config/keys').mongoURI;
@@ -70,6 +72,8 @@ app.use(
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+//app.use(adminpassport.initialize());
+//app.use(adminpassport.session());
 
 // Connect flash
 app.use(flash());
