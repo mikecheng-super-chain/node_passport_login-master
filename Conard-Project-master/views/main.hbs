@@ -1,0 +1,31 @@
+{{> _header}}
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<h1>This is front page</h1>
+<div class="w3-container w3-text-grey" >
+    <p>There are {{{productNum}}} products</p>
+</div>
+
+<div class="w3-row-padding">
+    <h3>List of Products</h3>
+    <p>What would you like to import to your shop?</p>
+    <p>Check to import to JSON file</p>
+    <form method="post" enctype="multipart/form-data" id='export'></form>
+        {{#each listOfProducts}}
+        <div class="w3-third w3-container w3-margin-bottom">
+            <img src="{{{this.imgsURL.[0]}}}" alt="No Photo Available" style="width:50%" class="w3-hover-opacity" onclick="{{{this.URL}}}">
+            <div class="w3-container w3-white">
+                <input form="export" type="checkbox" name="id" value="{{{this._id}}}" checked><b></b>
+                <br>
+                <a href="{{{this.URL}}}">{{{this.name}}}</a>
+                <p>Seller: <a href="{{{this.seller.URL}}}">{{{this.seller.name}}}</a></p>
+                <p>{{{this.description.shortDes}}}</p>
+                {{!-- <p>{{{this.description.picHtml}}}</p> --}}
+                <p>{{{this.description.desHtml}}}</p>
+                <p>${{{this.price}}}</p>
+            </div>
+        </div>
+        {{/each}}
+        <br>
+        <button type="submit" form="export">Export as JSON</button>
+    </form>
+</div>

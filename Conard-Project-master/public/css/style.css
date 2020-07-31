@@ -1,0 +1,31 @@
+p {
+    margin: 10px 0 !important;
+}
+
+.login-container{
+    width: 400px;
+    margin-top: center;
+    text-align: center;
+}
+.markup {
+    float: left;
+    margin-right: 15px;
+    background-color: #eee;
+    position: relative;
+    width: 80px;
+    overflow: hidden
+}
+
+.markup input {
+    margin: 0;
+    text-align: center;
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    float: right;
+    color: #000;
+    font-size: 20px;
+    border: 0;
+    outline: 0;
+    background-color: #F6F6F6
+}

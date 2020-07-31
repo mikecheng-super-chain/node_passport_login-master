@@ -1,0 +1,21 @@
+<h4><a href="/all_users/new">Create a new user</a></h4>
+<h4><a href="/users/login">Login as a user</a></h4>
+<h2>All Users</h2>
+<% include ../partials/messages %>
+<form action = "/all_users" method = "GET">
+    <label>User Name</label>
+    <input type="text" name="name" value="<%= searchOptions.name %>">
+    <button type="submit">Search</button>
+</form>
+<br>
+<% newUsers.forEach(newUser => { %>
+    <div><%= newUser.name %></div>
+    <%# vvv Can be deleted, just for testing. vvv %>
+    <div><%= newUser.email %></div>
+    <%# vvv Can be deleted, just for testing. vvv %>
+    <div><%= newUser.password %></div>
+    <a href="/all_users/<%= newUser.id %>/view">View</a>
+    <a href="/all_users/<%= newUser.id %>/edit">Edit</a>
+    <%- include('../partials/deleteForm.ejs',
+                  { url: `/all_users/${newUser.id}` }) %>
+<% }) %></br>

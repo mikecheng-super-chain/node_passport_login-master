@@ -1,0 +1,27 @@
+<h4><a href="/all_users">View all users</a></h4>
+<h2>View Users</h2>
+<div>Name: <%= newUser.name %></div>
+<div>Email: <%= newUser.email %></div>
+<div>Password: <%= newUser.password %></div>
+<a href="/all_users/<%= newUser.id %>">Cancel</a>
+<a href="/all_users/<%= newUser.id %>/edit">Edit</a>
+
+      <%- include('../partials/deleteForm.ejs',
+                  { url: `/all_users/${newUser.id}` }) %>
+
+      <script>
+        function myFunction() {
+          var x = document.getElementById("password");
+          if (x.type === "password") {
+            x.type = "text";
+          } else {
+            x.type = "password";
+          }
+          var y = document.getElementById("password2");
+          if (y.type === "password") {
+            y.type = "text";
+          } else {
+            y.type = "password";
+          }
+        }
+        </script>
