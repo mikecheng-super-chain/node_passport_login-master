@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 //To check user authentication by 'auth.js'
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
-const { ensureAdminAuthenticated, forwardAdminAuthenticated } = require('../config/adminauth');
 
 // Welcome Page
 //Set the index page into the 'welcome.ejs' page.
@@ -15,13 +14,5 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
     user: req.user
   })
 );
-
-/*
-router.get('/all_users', ensureAdminAuthenticated, (req, res) =>
-  res.render('all_users.ejs', {
-    user: req.user
-  })
-);
-*/
 
 module.exports = router;

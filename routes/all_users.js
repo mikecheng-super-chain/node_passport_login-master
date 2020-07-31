@@ -20,7 +20,7 @@ app.use(adminpassport.session());
 
 
 // All Authors Route
-router.get('/', forwardAdminAuthenticated, async (req, res) => {
+router.get('/', async (req, res) => {
   let searchOptions = {}
   if(req.query.name != null && req.query.name !== '') {
     searchOptions.name = new RegExp(req.query.name, 'i')
